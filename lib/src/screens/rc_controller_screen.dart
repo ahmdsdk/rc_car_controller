@@ -125,6 +125,23 @@ class _RCControllerScreenState extends State<RCControllerScreen> {
     }
   }
 
+  void _changeMode() {
+    _sendMessage('M');
+  }
+
+  void _disconnect() async {
+    // print('Disconnecting...');
+    setState(() {
+      isConnecting = false;
+      isDisconnecting = true;
+    });
+    await _connection?.close();
+    // print('Disconnected');
+    // if (mounted) {
+    //   Navigator.of(context).pop(true);
+    // }
+  }
+
   @override
   void dispose() {
     // Avoid memory leak (`setState` after dispose) and disconnect
@@ -139,82 +156,132 @@ class _RCControllerScreenState extends State<RCControllerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.amber.shade900,
-        foregroundColor: Colors.white,
-        title: Text('RC Controller for ${widget.selectedDevice!.name}'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Joystick(
-              stick: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: <Color>[
-                      Colors.amber,
-                      Colors.amber.shade900,
-                      const Color(0xFF964100),
-                    ],
-                    tileMode: TileMode.mirror,
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.4),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
+    return WillPopScope(
+      onWillPop: () async {
+        _disconnect();
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.amber.shade900,
+          foregroundColor: Colors.white,
+          title: Text('RC Controller for ${widget.selectedDevice!.name}'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: _disconnect,
+          ),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Joystick(
+                stick: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: <Color>[
+                        Colors.amber,
+                        Colors.amber.shade900,
+                        const Color(0xFF964100),
+                      ],
+                      tileMode: TileMode.mirror,
                     ),
-                  ],
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.4),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              mode: JoystickMode.all,
-              listener: (details) {
-                num x = details.x;
-                num y = details.y;
-                num angle = x == 0 ? 0 : atan(y / x) * 180 / pi;
+                mode: JoystickMode.all,
+                listener: (details) {
+                  num x = details.x;
+                  num y = details.y;
+                  num angle = x == 0 ? 0 : atan(y / x) * 180 / pi;
 
-                if (x > 0) {
-                  if (angle > -30 && angle < 30) {
-                    _sendMessage('R');
-                  } else if (angle < -30 && angle > -60) {
-                    _sendMessage('E');
-                  } else if (angle < -60 && angle > -90) {
-                    _sendMessage('F');
-                  } else if (angle > 30 && angle < 60) {
-                    _sendMessage('C');
-                  } else if (angle > 60 && angle < 90) {
-                    _sendMessage('B');
+                  if (x > 0) {
+                    if (angle > -30 && angle < 30) {
+                      _sendMessage('R');
+                    } else if (angle < -30 && angle > -60) {
+                      _sendMessage('E');
+                    } else if (angle < -60 && angle > -90) {
+                      _sendMessage('F');
+                    } else if (angle > 30 && angle < 60) {
+                      _sendMessage('C');
+                    } else if (angle > 60 && angle < 90) {
+                      _sendMessage('B');
+                    } else {
+                      _sendMessage('S');
+                    }
+                  } else if (x < 0) {
+                    if (angle > -30 && angle < 30) {
+                      _sendMessage('L');
+                    } else if (angle < -30 && angle > -60) {
+                      _sendMessage('Z');
+                    } else if (angle < -60 && angle > -90) {
+                      _sendMessage('B');
+                    } else if (angle > 30 && angle < 60) {
+                      _sendMessage('Q');
+                    } else if (angle > 60 && angle < 90) {
+                      _sendMessage('F');
+                    } else {
+                      _sendMessage('S');
+                    }
                   } else {
                     _sendMessage('S');
                   }
-                } else if (x < 0) {
-                  if (angle > -30 && angle < 30) {
-                    _sendMessage('L');
-                  } else if (angle < -30 && angle > -60) {
-                    _sendMessage('Z');
-                  } else if (angle < -60 && angle > -90) {
-                    _sendMessage('B');
-                  } else if (angle > 30 && angle < 60) {
-                    _sendMessage('Q');
-                  } else if (angle > 60 && angle < 90) {
-                    _sendMessage('F');
-                  } else {
-                    _sendMessage('S');
-                  }
-                } else {
-                  _sendMessage('S');
-                }
-              },
-            ),
-          ],
+                },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  ClipOval(
+                    child: Material(
+                      color: Colors.amber.shade900,
+                      child: InkWell(
+                        splashColor: Colors.amber.shade900,
+                        onTap: _changeMode,
+                        child: const SizedBox(
+                          width: 56,
+                          height: 56,
+                          child: Icon(
+                            Icons.change_circle,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  ClipOval(
+                    child: Material(
+                      color: Colors.red,
+                      child: InkWell(
+                        splashColor: Colors.amber.shade900,
+                        onTap: _disconnect,
+                        child: const SizedBox(
+                          width: 56,
+                          height: 56,
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
