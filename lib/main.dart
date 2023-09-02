@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print('Selected device -> ${_selectedDevice?.name}');
+    // print('Selected device -> ${_selectedDevice?.name}');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.amber.shade900,
@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                 if (value) {
                   _bluetooth.setPairingRequestHandler(
                       (BluetoothPairingRequest request) {
-                    print("Trying to auto-pair with Pin 1234");
+                    // print("Trying to auto-pair with Pin 1234");
                     if (request.pairingVariant == PairingVariant.Pin) {
                       return Future.value("1234");
                     }

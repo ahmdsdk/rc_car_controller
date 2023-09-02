@@ -129,6 +129,10 @@ class _RCControllerScreenState extends State<RCControllerScreen> {
     _sendMessage('M');
   }
 
+  void _doEight() {
+    _sendMessage('8');
+  }
+
   void _disconnect() async {
     // print('Disconnecting...');
     setState(() {
@@ -176,6 +180,29 @@ class _RCControllerScreenState extends State<RCControllerScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  ClipOval(
+                    child: Material(
+                      color: Colors.blue,
+                      child: InkWell(
+                        splashColor: Colors.blue,
+                        onTap: _doEight,
+                        child: const SizedBox(
+                          width: 56,
+                          height: 56,
+                          child: Icon(
+                            Icons.all_inclusive,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               Joystick(
                 stick: Container(
                   width: 80,
