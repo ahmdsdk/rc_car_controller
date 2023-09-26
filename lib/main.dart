@@ -15,7 +15,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'RC Car Controller',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -84,9 +84,6 @@ class _HomePageState extends State<HomePage> {
     // Listen for futher state changes
     _bluetooth.onStateChanged().listen((BluetoothState state) {
       setState(() {
-        // _bluetoothState = state;
-
-        // Discoverable mode is disabled when Bluetooth gets disabled
         _discoverableTimeoutTimer = null;
       });
     });
@@ -101,7 +98,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // print('Selected device -> ${_selectedDevice?.name}');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.amber.shade900,

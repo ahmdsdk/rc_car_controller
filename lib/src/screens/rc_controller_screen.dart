@@ -45,11 +45,6 @@ class _RCControllerScreenState extends State<RCControllerScreen> {
       });
 
       connection.input!.listen(_onDataReceived).onDone(() {
-        // if (isDisconnecting) {
-        //   print('Disconnecting locally!');
-        // } else {
-        //   print('Disconnected remotely!');
-        // }
         if (mounted) {
           Navigator.of(context).pop(true);
         }
@@ -134,21 +129,15 @@ class _RCControllerScreenState extends State<RCControllerScreen> {
   }
 
   void _disconnect() async {
-    // print('Disconnecting...');
     setState(() {
       isConnecting = false;
       isDisconnecting = true;
     });
     await _connection?.close();
-    // print('Disconnected');
-    // if (mounted) {
-    //   Navigator.of(context).pop(true);
-    // }
   }
 
   @override
   void dispose() {
-    // Avoid memory leak (`setState` after dispose) and disconnect
     if (isConnected) {
       isDisconnecting = true;
       _connection?.dispose();

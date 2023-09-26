@@ -45,7 +45,6 @@ class _DiscoveryPage extends State<DiscoveryPage> {
   }
 
   void _restartDiscovery() {
-    // print('restartDiscovery');
     if (widget.restartDiscovery.value) {
       widget.restartDiscovery.value = false;
       setState(() {
@@ -58,10 +57,8 @@ class _DiscoveryPage extends State<DiscoveryPage> {
   }
 
   void _startDiscovery() {
-    // print('startDiscovery');
     _streamSubscription =
         FlutterBluetoothSerial.instance.startDiscovery().listen((r) {
-      // print('Discovery found ${r.device.address} ${r.device.name}');
       setState(() {
         final existingIndex = results.indexWhere(
             (element) => element.device.address == r.device.address);
@@ -80,11 +77,8 @@ class _DiscoveryPage extends State<DiscoveryPage> {
     });
   }
 
-  // @TODO . One day there should be `_pairDevice` on long tap on something... ;)
-
   @override
   void dispose() {
-    // Avoid memory leak (`setState` after dispose) and cancel discovery
     _streamSubscription?.cancel();
 
     super.dispose();
@@ -111,16 +105,11 @@ class _DiscoveryPage extends State<DiscoveryPage> {
               try {
                 bool bonded = false;
                 if (device.isBonded) {
-                  // print('Unbonding from ${device.address}...');
                   await FlutterBluetoothSerial.instance
                       .removeDeviceBondWithAddress(address);
-                  // print('Unbonding from ${device.address} has succed');
                 } else {
-                  // print('Bonding with ${device.address}...');
                   bonded = (await FlutterBluetoothSerial.instance
                       .bondDeviceAtAddress(address))!;
-                  // print(
-                  //     'Bonding with ${device.address} has ${bonded ? 'succed' : 'failed'}.');
                 }
                 setState(() {
                   results[results.indexOf(result)] = BluetoothDiscoveryResult(
